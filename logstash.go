@@ -76,7 +76,6 @@ func (a *LogstashAdapter) maybeReconnect(writeErr error) error {
 
 func envLookup(env []string, key string) string {
 	for _, e := range env {
-		log.Print("envLookupOutput: ",e)
 		data := strings.SplitN(e, "=", 2)
 		if data[0] == key {
 			return data[1]
