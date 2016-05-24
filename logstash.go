@@ -126,7 +126,7 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 				continue
 			}
 		}
-
+		log.Println("json message: ", js)
 		_, err = a.conn.Write(js)
 		for err != nil {
 			log.Println("logstash:", err)
@@ -148,7 +148,7 @@ type DockerInfo struct {
 }
 
 type MesosInfo struct {
-	MesosTaskID string `json:"task_id"`
+	MesosTaskID string `json:"mesos_task_id"`
 	MesosSlaveHost string `json:"mesos_slave_host"`
 	MarathonAppID string `json:"marathon_app_id"`
 }
