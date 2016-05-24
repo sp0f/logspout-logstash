@@ -94,10 +94,9 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 			Hostname: m.Container.Config.Hostname,
 		}
 		mesosInfo := MesosInfo{
-			TaskID: envLookup(m.Container.Config.Env, "MESOS_TASK_ID"),
-		}
-		kubeInfo := KubernetesInfo{
-			Pod: m.Container.Config.Labels["io.kubernetes.pod.name"],
+			MesosTaskID: envLookup(m.Container.Config.Env, "MESOS_TASK_ID"),
+			MesosSlaveHost: envLookup(m.Container.Config.Env, "HOST"),
+			MarathonAppID: envLookup(m.Container.Config.Env, "MARATHON_APP_ID"),
 		}
 		var js []byte
 
@@ -109,7 +108,6 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 				Message:    m.Data,
 				Docker:     dockerInfo,
 				Mesos:      mesosInfo,
-				Kubernetes: kubeInfo,
 			}
 			js, err = json.Marshal(msg)
 			js = append(js, '\n')
@@ -121,7 +119,6 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 			// the message is already in JSON just add extra fields as a nested structures
 			jsonMsg["docker"] = dockerInfo
 			jsonMsg["mesos"] = mesosInfo
-			jsonMsg["kubernetes"] = kubeInfo
 
 			js, err = json.Marshal(jsonMsg)
 			if err != nil {
@@ -151,11 +148,9 @@ type DockerInfo struct {
 }
 
 type MesosInfo struct {
-	TaskID string `json:"task_id"`
-}
-
-type KubernetesInfo struct {
-	Pod string `json:"pod"`
+	MesosTaskID string `json:"task_id"`
+	MesosSlaveHost string `json:"mesos_slave_host"`
+	MarathonAppID string `json:"marathon_app_id"`
 }
 
 // LogstashMessage is a simple JSON input to Logstash.
@@ -163,5 +158,4 @@ type LogstashMessage struct {
 	Message    string         `json:"message"`
 	Docker     DockerInfo     `json:"docker"`
 	Mesos      MesosInfo      `json:"mesos"`
-	Kubernetes KubernetesInfo `json:"kubernetes"`
 }
