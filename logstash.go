@@ -76,6 +76,7 @@ func (a *LogstashAdapter) maybeReconnect(writeErr error) error {
 
 func envLookup(env []string, key string) string {
 	for _, e := range env {
+		print(e)
 		data := strings.SplitN(e, "=", 2)
 		if data[0] == key {
 			return data[1]
@@ -126,7 +127,6 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 				continue
 			}
 		}
-		log.Println("json message: ", js)
 		_, err = a.conn.Write(js)
 		for err != nil {
 			log.Println("logstash:", err)
